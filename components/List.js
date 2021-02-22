@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,7 +13,23 @@ import { removeTodo, changeStatus } from '../actions/';
 
 export default function List() {
   const todoList = useSelector(state => state.todoReducers);
+
   const dispatch = useDispatch();
+  const listEndref = useRef(null);
+
+  const usePrevious = value => {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+  };
+
+  const prevTodoList = usePrevious(todoList) || [];
+
+  const scrollToBottom = () => {
+    listEndref.current.scrollToEnd({ animated: true });
+  };
 
   const active = list => {
     let count = 0;
@@ -22,6 +38,12 @@ export default function List() {
     });
     return count;
   };
+
+  useEffect(() => {
+    if (todoList.length > prevTodoList.length) {
+      scrollToBottom();
+    }
+  }, [todoList, prevTodoList]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,7 +56,8 @@ export default function List() {
           <Text style={styles.titleInfo}>List Total: {todoList.length}</Text>
         </View>
       </View>
-      <ScrollView style={styles.listContainer}>
+
+      <ScrollView style={styles.listContainer} ref={listEndref}>
         {todoList.length > 0 &&
           todoList.map((todo, idx) => {
             return (
@@ -65,7 +88,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingLeft: 15,
     paddingRight: 15,
-    marginBottom: 120,
     borderBottomWidth: 1,
     borderStyle: 'solid',
     borderColor: 'gray',
@@ -104,7 +126,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'white',
-    marginTop: 25,
+    marginTop: 20,
+    marginBottom: 10,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,

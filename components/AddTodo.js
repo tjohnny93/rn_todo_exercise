@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { addTodo } from '../actions/';
 import {
@@ -25,42 +25,46 @@ export default function AddTodo() {
       task: todo,
       done: false,
     };
-    dispatch(addTodo(todoAction));
-    setTodo('');
+    todo.length > 0
+      ? dispatch(addTodo(todoAction)) && setTodo('')
+      : alert('Please Type Something Todo');
   };
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'ehight}'}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.typeTodo}
     >
-      <TextInput
-        style={styles.input}
-        placeholder={'Type Todo'}
-        onChangeText={text => handleTodo(text)}
-        value={todo}
-      ></TextInput>
-      <TouchableOpacity onPress={() => submitTodo()}>
-        <View style={styles.addBtnWrapper}>
-          <Text style={styles.addBtn}>+</Text>
-        </View>
-      </TouchableOpacity>
+      <View style={styles.typeBg}>
+        <TextInput
+          style={styles.input}
+          placeholder={'Type Todo'}
+          onChangeText={text => handleTodo(text)}
+          value={todo}
+        ></TextInput>
+        <TouchableOpacity onPress={() => submitTodo()}>
+          <View style={styles.addBtnWrapper}>
+            <Text style={styles.addBtn}>+</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   typeTodo: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  typeBg: {
     flex: 1,
-    position: 'absolute',
-    bottom: 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingLeft: 20,
-    // paddingRight: 35,
-    // marginTop: 15,
-    // marginBottom: 30,
+    backgroundColor: 'skyblue',
+    paddingHorizontal: 15,
+    paddingVertical: 40,
   },
   input: {
     paddingVertical: 18,
@@ -72,7 +76,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     width: 300,
     fontSize: 18,
-    marginRight: 26,
   },
   addBtnWrapper: {
     paddingVertical: 8,
